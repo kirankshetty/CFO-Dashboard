@@ -227,23 +227,138 @@ const StoreStatistics = ({ data, stateWiseData, topStores }) => {
         </Card>
       </div>
 
-      {/* State-wise Performance Grid */}
+      {/* State-wise Performance Heatmap */}
       <Card>
         <CardHeader>
-          <CardTitle>State-wise Performance Overview</CardTitle>
+          <CardTitle>State-wise Performance Heatmap</CardTitle>
           <CardDescription>
-            Detailed view of store performance across all states
+            Interactive India map showing performance across states
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {stateWiseData.map((state, index) => (
-              <StateCard
-                key={state.state}
-                {...state}
-              />
-            ))}
-          </div>
+          <Tabs value={selectedMetric} onValueChange={setSelectedMetric} className="space-y-4">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="storeCount">Store Count</TabsTrigger>
+              <TabsTrigger value="headcount">Employee Count</TabsTrigger>
+              <TabsTrigger value="revenue">Revenue</TabsTrigger>
+            </TabsList>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <IndiaHeatMap
+                  data={stateWiseData}
+                  metric={selectedMetric}
+                  onStateHover={setHoveredState}
+                  onStateClick={(stateData) => {
+                    console.log('State clicked:', stateData);
+                  }}
+                />
+              </div>
+              
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold mb-2">
+                    {selectedMetric === 'storeCount' && 'Store Count'}
+                    {selectedMetric === 'headcount' && 'Employee Count'}
+                    {selectedMetric === 'revenue' && 'Revenue Performance'}
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Hover over states for details
+                  </p>
+                </div>
+                
+                {hoveredState ? (
+                  <Card className="p-4">
+                    <h4 className="font-semibold text-base mb-3">{hoveredState.state}</h4>
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Stores:</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold">{hoveredState.storeCount}</span>
+                          <div className="flex items-center">
+                            {hoveredState.storeCountChange >= 0 ? (
+                              <TrendingUp className="h-3 w-3 text-green-600" />
+                            ) : (
+                              <TrendingDown className="h-3 w-3 text-red-600" />
+                            )}
+                            <span className={`text-xs ml-1 ${hoveredState.storeCountChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {hoveredState.storeCountChange}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Employees:</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold">{hoveredState.headcount}</span>
+                          <div className="flex items-center">
+                            {hoveredState.headcountChange >= 0 ? (
+                              <TrendingUp className="h-3 w-3 text-green-600" />
+                            ) : (
+                              <TrendingDown className="h-3 w-3 text-red-600" />
+                            )}
+                            <span className={`text-xs ml-1 ${hoveredState.headcountChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {hoveredState.headcountChange}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm text-muted-foreground">Revenue:</span>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold">{formatCurrency(hoveredState.revenue).slice(0, -3)}L</span>
+                          <div className="flex items-center">
+                            {hoveredState.revenueChange >= 0 ? (
+                              <TrendingUp className="h-3 w-3 text-green-600" />
+                            ) : (
+                              <TrendingDown className="h-3 w-3 text-red-600" />
+                            )}
+                            <span className={`text-xs ml-1 ${hoveredState.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {hoveredState.revenueChange}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ) : (
+                  <Card className="p-4 text-center text-muted-foreground">
+                    <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">Hover over a state to see details</p>
+                  </Card>
+                )}
+                
+                {/* Top 5 States for selected metric */}
+                <Card className="p-4">
+                  <h4 className="font-semibold mb-3">
+                    Top 5 States by {selectedMetric === 'storeCount' ? 'Store Count' : selectedMetric === 'headcount' ? 'Employees' : 'Revenue'}
+                  </h4>
+                  <div className="space-y-2">
+                    {stateWiseData
+                      .sort((a, b) => b[selectedMetric] - a[selectedMetric])
+                      .slice(0, 5)
+                      .map((state, index) => (
+                        <div key={state.state} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center space-x-2">
+                            <Badge variant="secondary" className="w-5 h-5 text-xs flex items-center justify-center">
+                              {index + 1}
+                            </Badge>
+                            <span>{state.state}</span>
+                          </div>
+                          <span className="font-semibold">
+                            {selectedMetric === 'revenue' 
+                              ? formatCurrency(state[selectedMetric]).slice(0, -3) + 'L'
+                              : formatNumber(state[selectedMetric])
+                            }
+                          </span>
+                        </div>
+                      ))
+                    }
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </Tabs>
         </CardContent>
       </Card>
 
