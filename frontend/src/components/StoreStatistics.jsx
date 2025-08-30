@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import {
   BarChart,
   Bar,
@@ -17,6 +18,7 @@ import {
 } from 'recharts';
 import { TrendingUp, TrendingDown, MapPin, Users, Store } from 'lucide-react';
 import { calculateMoMChange } from '../data/mock';
+import IndiaHeatMap from './IndiaHeatMap';
 
 const StoreStatistics = ({ data, stateWiseData, topStores }) => {
   
