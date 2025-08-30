@@ -244,47 +244,90 @@ const StoreStatistics = ({ data, stateWiseData, topStores }) => {
       </Card>
 
       {/* Top Performing Stores */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Top 10 Performing Stores</CardTitle>
-          <CardDescription>
-            Highest revenue generating stores this month
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {topStores.map((store, index) => (
-              <div 
-                key={store.id} 
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg transition-all hover:bg-gray-100"
-              >
-                <div className="flex items-center space-x-4">
-                  <Badge variant="secondary" className="w-8 h-8 rounded-full flex items-center justify-center">
-                    {index + 1}
-                  </Badge>
-                  <div>
-                    <p className="font-semibold">{store.name}</p>
-                    <p className="text-sm text-muted-foreground">{store.state}, {store.city}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Top 10 Performing Stores</CardTitle>
+            <CardDescription>
+              Revenue distribution among highest performing stores
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={400}>
+              <PieChart>
+                <Pie
+                  data={topStores.map((store, index) => ({
+                    name: `${store.name} (${store.state})`,
+                    value: store.revenue,
+                    fill: chartColors[index % chartColors.length],
+                    change: store.revenueChange
+                  }))}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={120}
+                  innerRadius={40}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {topStores.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={chartColors[index % chartColors.length]} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value, name, props) => [
+                    formatCurrency(value),
+                    props.payload.name,
+                    `Change: ${props.payload.change >= 0 ? '+' : ''}${props.payload.change}%`
+                  ]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Store Performance Details</CardTitle>
+            <CardDescription>
+              Detailed breakdown with month-over-month changes
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 max-h-96 overflow-y-auto">
+              {topStores.map((store, index) => (
+                <div 
+                  key={store.id} 
+                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-all hover:bg-gray-100"
+                >
+                  <div className="flex items-center space-x-3">
+                    <div 
+                      className="w-4 h-4 rounded-full" 
+                      style={{ backgroundColor: chartColors[index % chartColors.length] }}
+                    />
+                    <div>
+                      <p className="font-semibold text-sm">{store.name}</p>
+                      <p className="text-xs text-muted-foreground">{store.state}, {store.city}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-semibold text-sm">{formatCurrency(store.revenue)}</p>
+                    <div className="flex items-center space-x-1">
+                      {store.revenueChange >= 0 ? (
+                        <TrendingUp className="h-3 w-3 text-green-600" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3 text-red-600" />
+                      )}
+                      <span className={`text-xs ${store.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {store.revenueChange}%
+                      </span>
+                    </div>
                   </div>
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold">{formatCurrency(store.revenue)}</p>
-                  <div className="flex items-center space-x-1">
-                    {store.revenueChange >= 0 ? (
-                      <TrendingUp className="h-4 w-4 text-green-600" />
-                    ) : (
-                      <TrendingDown className="h-4 w-4 text-red-600" />
-                    )}
-                    <span className={`text-sm ${store.revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {store.revenueChange}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
