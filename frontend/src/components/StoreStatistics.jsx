@@ -21,6 +21,8 @@ import { calculateMoMChange } from '../data/mock';
 import IndiaHeatMap from './IndiaHeatMap';
 
 const StoreStatistics = ({ data, stateWiseData, topStores }) => {
+  const [selectedMetric, setSelectedMetric] = useState('storeCount');
+  const [hoveredState, setHoveredState] = useState(null);
   
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-IN', {
@@ -36,7 +38,7 @@ const StoreStatistics = ({ data, stateWiseData, topStores }) => {
   };
 
   // Colors for charts
-  const chartColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+  const chartColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#8b5cf6', '#06b6d4'];
   
   // Top 10 states by store count
   const top10States = stateWiseData
