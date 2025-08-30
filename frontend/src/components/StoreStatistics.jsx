@@ -58,65 +58,6 @@ const StoreStatistics = ({ data, stateWiseData, topStores }) => {
     headcount: item.totalHeadcount
   }));
 
-  const StateCard = ({ state, storeCount, headcount, revenue, storeCountChange, headcountChange, revenueChange }) => {
-    return (
-      <Card className="transition-all duration-300 hover:shadow-md">
-        <CardHeader className="pb-3">
-          <div className="flex justify-between items-start">
-            <CardTitle className="text-sm font-medium">{state}</CardTitle>
-            <MapPin className="h-4 w-4 text-muted-foreground" />
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            <div>
-              <p className="text-muted-foreground">Stores</p>
-              <p className="font-semibold">{storeCount}</p>
-              <div className="flex items-center">
-                {storeCountChange >= 0 ? (
-                  <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
-                )}
-                <span className={`text-xs ${storeCountChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {storeCountChange}%
-                </span>
-              </div>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Staff</p>
-              <p className="font-semibold">{headcount}</p>
-              <div className="flex items-center">
-                {headcountChange >= 0 ? (
-                  <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
-                )}
-                <span className={`text-xs ${headcountChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {headcountChange}%
-                </span>
-              </div>
-            </div>
-            <div>
-              <p className="text-muted-foreground">Revenue</p>
-              <p className="font-semibold">{formatCurrency(revenue).slice(0, -3)}L</p>
-              <div className="flex items-center">
-                {revenueChange >= 0 ? (
-                  <TrendingUp className="h-3 w-3 text-green-600 mr-1" />
-                ) : (
-                  <TrendingDown className="h-3 w-3 text-red-600 mr-1" />
-                )}
-                <span className={`text-xs ${revenueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {revenueChange}%
-                </span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  };
-
   return (
     <div className="space-y-6">
       {/* Store Count by State */}
