@@ -85,14 +85,32 @@ export const stateWiseStores = indianStates.map(state => {
   };
 });
 
-// Top performing stores
+// Top performing stores with realistic revenue distribution
 export const topStores = storeData
   .sort((a, b) => b.revenue - a.revenue)
   .slice(0, 10)
-  .map(store => ({
-    ...store,
-    revenueChange: Math.floor(Math.random() * 30) - 15 // -15% to +15%
-  }));
+  .map((store, index) => {
+    // Create a clear revenue hierarchy for top 10 stores
+    const baseRevenue = 600000; // 6 lakhs base
+    const revenueMultiplier = [
+      2.5,  // Top store: 15L
+      2.2,  // 2nd: 13.2L
+      1.9,  // 3rd: 11.4L
+      1.7,  // 4th: 10.2L
+      1.5,  // 5th: 9L
+      1.3,  // 6th: 7.8L
+      1.1,  // 7th: 6.6L
+      0.95, // 8th: 5.7L
+      0.8,  // 9th: 4.8L
+      0.65  // 10th: 3.9L
+    ];
+    
+    return {
+      ...store,
+      revenue: Math.floor(baseRevenue * revenueMultiplier[index]),
+      revenueChange: Math.floor(Math.random() * 30) - 15 // -15% to +15%
+    };
+  });
 
 // Calculate month-over-month changes
 export const calculateMoMChange = (current, previous) => {
