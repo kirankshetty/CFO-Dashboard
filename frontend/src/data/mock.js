@@ -71,14 +71,28 @@ export const monthlyData = generateMonthlyData();
 export const stateWiseStores = indianStates.map(state => {
   const storeCount = storeData.filter(store => store.state === state).length;
   const headcount = storeData.filter(store => store.state === state).reduce((acc, store) => acc + store.headcount, 0);
-  const revenue = storeData.filter(store => store.state === state).reduce((acc, store) => acc + store.revenue, 0);
+  
+  // Create more realistic revenue distribution based on state economic profiles
+  const stateRevenueMultipliers = {
+    'Maharashtra': 1.8, 'Gujarat': 1.6, 'Karnataka': 1.5, 'Tamil Nadu': 1.4, 
+    'West Bengal': 1.3, 'Uttar Pradesh': 1.2, 'Rajasthan': 1.1, 'Haryana': 1.4,
+    'Punjab': 1.3, 'Kerala': 1.2, 'Andhra Pradesh': 1.1, 'Telangana': 1.2,
+    'Madhya Pradesh': 0.9, 'Odisha': 0.8, 'Bihar': 0.7, 'Jharkhand': 0.8,
+    'Chhattisgarh': 0.8, 'Assam': 0.7, 'Himachal Pradesh': 1.0, 'Uttarakhand': 1.0,
+    'Goa': 1.3, 'Tripura': 0.6, 'Manipur': 0.6, 'Meghalaya': 0.6, 
+    'Nagaland': 0.6, 'Mizoram': 0.6, 'Arunachal Pradesh': 0.6, 'Sikkim': 0.7
+  };
+  
+  const baseRevenue = 250000; // Base revenue per store
+  const multiplier = stateRevenueMultipliers[state] || 1.0;
+  const revenue = Math.floor(storeCount * baseRevenue * multiplier * (0.8 + Math.random() * 0.4));
   
   return {
     state,
     storeCount,
     headcount,
     revenue,
-    // Add percentage change (mock)
+    // Add percentage change (mock) with more realistic variations
     storeCountChange: Math.floor(Math.random() * 20) - 10, // -10% to +10%
     headcountChange: Math.floor(Math.random() * 15) - 7.5, // -7.5% to +7.5%
     revenueChange: Math.floor(Math.random() * 25) - 12.5, // -12.5% to +12.5%
